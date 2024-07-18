@@ -30,4 +30,18 @@ export default class CustomerService {
 
     }
 
+    async changeAddress(customerId: string, address: Address): Promise<void> {
+
+        if (!this.customerRepository)
+            throw Error('CustomerRepositoryInterface not defined')
+
+        const customer = await this.customerRepository.find(customerId)
+        customer.changeAddress(address);
+        await this.customerRepository.update(customer);
+
+        if (this.dispatcher)
+            this.dispatcher.notify(new CustomerAddressChangedEvent(customer))
+
+    }
+
 }

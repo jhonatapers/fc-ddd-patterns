@@ -71,4 +71,53 @@ describe("Customer service unit tests", () => {
         expect(result).toStrictEqual(customer);
     });
 
+    it("should change a customer address", async () => {
+        const customer = new Customer("123", "name");
+        const address1 = new Address("street one", 123, "00000000", "city");
+        customer.changeAddress(address1);
+
+        const customerRepository = new CustomerRepository();
+
+        await customerRepository.create(customer);
+
+        const address2 = new Address("street one", 124, "00000000", "city");
+        customer.changeAddress(address2);
+
+        const customerService = new CustomerService(customerRepository);
+
+        await customerService.changeAddress(customer.id, address2);
+
+        const result = await customerRepository.find("123");
+
+        expect(result.Address).toStrictEqual(address2);
+    });
+
+
+    it("should change a customer address and notify event dispatcher", async () => {
+        const customer = new Customer("123", "name");
+        const address1 = new Address("street one", 123, "00000000", "city");
+        customer.changeAddress(address1);
+
+        const customerRepository = new CustomerRepository();
+
+        await customerRepository.create(customer);
+
+        const address2 = new Address("street one", 124, "00000000", "city");
+        customer.changeAddress(address2);
+
+
+        const dispatcher = new EventDispatcher();
+        const sendConsoleLogWhenCustomerChangedAddressHandler = new SendConsoleLogWhenCustomerChangedAddressHandler();
+        const spyEventHandler = jest.spyOn(sendConsoleLogWhenCustomerChangedAddressHandler, "handle");
+        dispatcher.register('CustomerAddressChangedEvent', sendConsoleLogWhenCustomerChangedAddressHandler);
+
+        const customerService = new CustomerService(customerRepository, dispatcher);
+        await customerService.changeAddress(customer.id, address2);
+
+        const result = await customerRepository.find("123");
+
+        expect(result.Address).toStrictEqual(address2);
+        expect(spyEventHandler).toHaveBeenCalled();
+    });
+
 });
