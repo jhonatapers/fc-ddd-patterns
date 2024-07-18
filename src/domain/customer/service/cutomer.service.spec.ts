@@ -7,6 +7,7 @@ import Address from "../value-object/address";
 import EventDispatcher from "../../@shared/event/event-dispatcher";
 import SendConsoleLogWhenCustomerIsCreated1Handler from "../event/handler/send-console-log-when-customer-is-created-1.handler";
 import SendConsoleLogWhenCustomerIsCreated2Handler from "../event/handler/send-console-log-when-customer-is-created-2.handler";
+import SendConsoleLogWhenCustomerChangedAddressHandler from "../event/handler/send-console-log-when-customer-changed-address.handler";
 
 describe("Customer service unit tests", () => {
 
